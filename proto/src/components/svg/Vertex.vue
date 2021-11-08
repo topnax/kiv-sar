@@ -87,5 +87,4 @@ foreignObject {
   pointer-events: none;
 }
 
-
 </style>

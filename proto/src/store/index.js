@@ -1,22 +1,18 @@
 import {createStore} from 'vuex'
-import loadTestData from '@/utils/graph_loader.js'
-import force_directed_layout from '@/utils/graph_loader.js'
+import loadTestData from '@/utils/graph.js'
+import force_directed_layout from '@/utils/graph.js'
 
-
-let scaleD = 0.1
+// scale factor
+const scaleD = 0.1
 
 export default createStore({
     state: {
-        count: 0,
-        lines: [
-            //getLine(10, 10, 300, 10, 0,  "loves"),
-            //getLine(25, 400, 300, 10, 0,  "hates")
-        ],
-        nodes: [
-            //getNode(10, 10, null, 0, "Node 1"),
-            //getNode(300, 10, null, 1, "Node X"),
-            //getNode(25, 400, null, 2, "Sherlock"),
-        ],
+        // flag indicating whether the application is busy loading/processing something
+        loading: true,
+        // state attributes representing the graph
+        edges: [],
+        vertices: [],
+        // define a global style object for graph components
         style: {
             line: {
                 strokeColor: "#888888AA",
@@ -45,57 +41,50 @@ export default createStore({
     },
     getters: {},
     mutations: {
-        INCREMENT_COUNTER(state, {targetX, targetY}) {
-            console.log(targetX)
-            console.log(targetY)
-            // let original_scale = state.viewPort.scale
-            // let screen_size = [window.innerWidth, window.innerHeight]
-            // let viewSize = [window.innerWidth * 1 / original_scale,
-            //     window.innerHeight * 1 / original_scale];
-            // console.log(`tx=${state.viewPort.tx}, tx=${state.viewPort.ty}`)
-
-            // let shift_fraction = [targetX / screen_size[0], targetY / screen_size[1]];
+        // mutations of the viewports scale
+        // eslint-disable-next-line no-unused-vars
+        INCREASE_SCALE(state, {targetX, targetY}) {
+            // TODO utilize targetX and targetY to zoom at the  cursor
             state.viewPort.scale += scaleD
-
-            // state.viewPort.tx -= (viewSize[0] - viewSize[0] / (state.viewPort.scale) * (original_scale)) * shift_fraction[0];
-            // state.viewPort.ty -= (viewSize[1] - viewSize[1] / (state.viewPort.scale) * (original_scale)) * shift_fraction[1];
         },
-        DECREMENT_COUNTER(state) {
+        DECREASE_SCALE(state) {
             if (state.viewPort.scale - scaleD > 0.1) {
                 state.viewPort.scale -= scaleD
             }
         },
+        // mutations of node highlight state
         HIGHLIGHT_NODE(state, node) {
             node.highlighted = true
         },
         DISABLE_NODE_HIGHLIGHT(state, node) {
             node.highlighted = false
         },
+        // mutations for changing the translation of the viewport
         CHANGE_TRANSLATION(state, {dx, dy}) {
             state.viewPort.tx += dx
             state.viewPort.ty += dy
         },
+        // TODO utilize
         CHANGE_NODE_POS(state, {node, dx, dy}) {
             node.x += dx
             node.y += dy
         },
-        // eslint-disable-next-line no-unused-vars
+        // mutation for storing the graph data
         SET_GRAPH_DATA(state, {edges, vertices}) {
-            // console.log(edges)
-            // console.log(vertices)
-            state.nodes = vertices
-            state.lines = edges
-            console.log(state)
+            state.vertices = vertices
+            state.edges = edges
+        },
+        // mutation for toggling the loading state
+        SET_LOADING(state, loading) {
+            state.loading = loading
         }
     },
     actions: {
         async increment({commit}, event) {
-            console.log("incre")
-            console.log(event)
-            commit("INCREMENT_COUNTER", event)
+            commit("INCREASE_SCALE", event)
         },
         async decrement({commit}) {
-            commit("DECREMENT_COUNTER")
+            commit("DECREASE_SCALE")
         },
         async toggleNodeHighlightState({commit}, node) {
             if (node.highlighted) {
@@ -112,9 +101,12 @@ export default createStore({
         },
         // eslint-disable-next-line no-unused-vars
         async loadInitialData({commit}, graph) {
+            commit("SET_LOADING", true)
             loadTestData.prepare_graph_object(graph, 5000)
             force_directed_layout.force_directed_layout(graph, 5000, 5000, 20)
             commit("SET_GRAPH_DATA", graph)
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            commit("SET_LOADING", false)
         }
     }
 })

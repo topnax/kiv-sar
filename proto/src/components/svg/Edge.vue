@@ -1,3 +1,4 @@
+<!-- A component that represents a graph edge -->
 <template>
   <g>
     <line
@@ -8,11 +9,12 @@
         marker-end="url(#triangle)"
         :style="`stroke:${style.strokeColor};stroke-width:${style.strokeWidth}`"
     />
-    <text class="wrap" :x="textX" :y="textY">
+    <text class="wrap" :x="titleX" :y="titleY">
       <tspan text-anchor="middle" :fill="style.textColor">{{ title }}</tspan>
     </text>
   </g>
 </template>
+
 <script>
 export default {
   props: {
@@ -26,28 +28,33 @@ export default {
     style: Object
   },
   computed: {
-    textX() {
+    // X coordinate of edge's title
+    titleX() {
       return this.startX + (this.endX - this.startX) / 2
     },
-    textY() {
+    // Y coordinate of edge's title
+    titleY() {
       return (this.startY + (this.endY - this.startY) / 2) - this.style.textBottomOffset
     },
+    // utilized for computing the length of the edge
     a() {
       return this.endX - this.startX
     },
+    // utilized for computing the length of the edge
     b() {
       return this.endY - this.startY
     },
+    // length of the edge
     length() {
       return Math.sqrt(Math.pow(this.a, 2) + Math.pow(this.b, 2))
     },
+    // computed properties utilized for positioning of arrows head
     startOffsetRatio() {
       return this.startOffset / this.length
     },
     endOffsetRatio() {
       return (this.startOffset + this.style.arrowSize) / this.length
     },
-
     startOffsetX() {
       return this.startOffsetRatio * this.a
     },

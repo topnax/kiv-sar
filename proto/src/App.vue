@@ -1,9 +1,11 @@
+<!-- Root Vue component of the application -->
 <template>
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1 v-if="this.$store.state.loading" class="mt-5 text-center"><strong>VueJS prototype</strong> is being loaded...</h1>
+  <SvgShowcase v-else />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import SvgShowcase from './components/SvgShowcase.vue'
 import store from './store'
 import {mapActions} from "vuex"
 import testData from '@/assets/data/test-data.json'
@@ -11,13 +13,14 @@ import testData from '@/assets/data/test-data.json'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    SvgShowcase
   },
   methods: {
     ...mapActions(["loadInitialData"])
   },
   store,
   mounted() {
+    // load graph data on component initialization
     this.loadInitialData(testData)
   }
 }

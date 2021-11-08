@@ -211,8 +211,4 @@ export default {
             start_x = end_x + 1000;
         }
     }
-
-
 }
-
-

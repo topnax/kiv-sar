@@ -1,4 +1,6 @@
+<!-- A view that defines various SVG components to be utilized in other views-->
 <template>
+  <!-- Define a head of an arrow -->
   <defs>
     <marker id="triangle" viewBox="0 0 10 10"
             refX="1" refY="5"
@@ -16,5 +18,3 @@ export default {
   },
 }
 </script>
-
-
