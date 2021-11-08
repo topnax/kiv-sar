@@ -26,7 +26,6 @@ export default {
             add_edge_to_vertex(loaded_graph["edges"][i].to, i);
         }
         this.initialize_xy(loaded_graph, size)
-        console.log(loaded_graph)
     },
 
     /**

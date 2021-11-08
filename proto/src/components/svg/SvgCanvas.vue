@@ -7,7 +7,7 @@
     >
       <!-- import common SVG components, such as arrow heads that are used when displaying an edge-->
       <SvgComponents
-          :style="style.line"/>
+          :style="style.edge"/>
 
       <g :transform="`
             translate(${viewPort.tx}, ${viewPort.ty})
@@ -22,8 +22,8 @@
                 :end-x="vertices[l.to].x"
                 :end-y="vertices[l.to].y"
                 :title="l.description"
-                :style="style.line"
-                :start-offset="style.node.radius"
+                :style="style.edge"
+                :start-offset="style.vertex.radius"
                 :key="`link-${l.id}`"/>
 
           <Vertex v-for="n in vertices"
@@ -31,7 +31,7 @@
                   :x="n.x"
                   :y="n.y"
                   :title="n.name"
-                  :style="style.node"
+                  :style="style.vertex"
                   :radius="n.radius"
                   :highlighted="n.highlighted"
                   :on-click="() => onNodeClicked(n)"
@@ -76,7 +76,7 @@ export default {
     document.getElementById(id).addEventListener("mousedown", this.onMouseDownEvent);
   },
   methods: {
-    ...mapActions(["increment", "decrement", "toggleNodeHighlightState", "changeTranslation"]),
+    ...mapActions(["increaseScale", "decreaseScale", "toggleNodeHighlightState", "changeTranslation"]),
     onMouseDownEvent(event) {
       this.iX = event.clientX
       this.iY = event.clientY
@@ -84,10 +84,9 @@ export default {
     onMouseWheelEvent(event) {
       const delta = Math.sign(event.deltaY)
       if (delta < 0) {
-        console.log(event)
-        this.increment({targetX: event.clientX, targetY: event.clientY})
+        this.increaseScale({targetX: event.clientX, targetY: event.clientY})
       } else {
-        this.decrement()
+        this.decreaseScale()
       }
     },
     onMouseMoveEvent(event) {

@@ -14,7 +14,7 @@ export default createStore({
         vertices: [],
         // define a global style object for graph components
         style: {
-            line: {
+            edge: {
                 strokeColor: "#888888AA",
                 tipColor: "#444444",
                 strokeWidth: 4,
@@ -23,7 +23,7 @@ export default createStore({
                 arrowSize: 9,
                 textColor: "red"
             },
-            node: {
+            vertex: {
                 strokeWidth: 1,
                 fillColor: "white",
                 highlightedFillColor: "#F44336",
@@ -39,12 +39,11 @@ export default createStore({
             height: window.innerHeight
         }
     },
-    getters: {},
     mutations: {
         // mutations of the viewports scale
         // eslint-disable-next-line no-unused-vars
         INCREASE_SCALE(state, {targetX, targetY}) {
-            // TODO utilize targetX and targetY to zoom at the  cursor
+            // TODO utilize targetX and targetY to zoom at the target coordinates
             state.viewPort.scale += scaleD
         },
         DECREASE_SCALE(state) {
@@ -80,10 +79,10 @@ export default createStore({
         }
     },
     actions: {
-        async increment({commit}, event) {
+        async increaseScale({commit}, event) {
             commit("INCREASE_SCALE", event)
         },
-        async decrement({commit}) {
+        async decreaseScale({commit}) {
             commit("DECREASE_SCALE")
         },
         async toggleNodeHighlightState({commit}, node) {
