@@ -11,7 +11,7 @@
         @click="onCircleClicked()"
     />
     <foreignObject :x="x - radiusSafe" :y="y - radiusSafe/2" :width="2*radiusSafe" :height="radiusSafe">
-      <div class="node-text">
+      <div class="vertex-text">
         {{ safeTitle }}
       </div>
     </foreignObject>
@@ -28,7 +28,8 @@ export default {
     style: Object,
     radius: Number,
     highlighted: Boolean,
-    onClick: Function
+    onClick: Function,
+    onVertexMouseDownOrUp: Function
   },
   computed: {
     radiusSafe() {
@@ -39,7 +40,7 @@ export default {
       }
     },
     fullId() {
-      return `node-${this.id}`
+      return `vertex-${this.id}`
     },
     safeTitle() {
       if (this.title.length > 16) {
@@ -48,17 +49,14 @@ export default {
         return this.title
       }
     },
-    data() {
-      return {
-        iX: 0,
-        iY: 0
-      }
-    },
   },
   methods: {
     onCircleClicked() {
       this.onClick()
-    }
+    },
+  },
+  mounted() {
+    document.getElementById(this.fullId).addEventListener("mousedown", () => this.onVertexMouseDownOrUp(true));
   }
 }
 </script>
@@ -68,7 +66,7 @@ svg circle {
   cursor: pointer;
 }
 
-.node-text {
+.vertex-text {
   text-align: center;
   max-lines: 2;
   vertical-align: middle;

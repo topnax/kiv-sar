@@ -34,8 +34,9 @@
                   :style="style.vertex"
                   :radius="n.radius"
                   :highlighted="n.highlighted"
-                  :on-click="() => onNodeClicked(n)"
-                  :key="`node-${n.id}`"/>
+                  :on-click="() => onVertexClicked(n)"
+                  :on-vertex-mouse-down-or-up="(down) => onVertexMouseDown(down, n)"
+                  :key="`vertex-${n.id}`"/>
 
         </g>
       </g>
@@ -58,7 +59,7 @@ export default {
     vertices: Array,
     style: {
       line: Object,
-      node: Object
+      vertex: Object
     },
     viewPort: Object
   },
@@ -74,12 +75,16 @@ export default {
     document.getElementById(id).addEventListener("wheel", this.onMouseWheelEvent);
     document.getElementById(id).addEventListener("mousemove", this.onMouseMoveEvent);
     document.getElementById(id).addEventListener("mousedown", this.onMouseDownEvent);
+    document.getElementById(id).addEventListener("mouseup", this.onMouseUpEvent);
   },
   methods: {
-    ...mapActions(["increaseScale", "decreaseScale", "toggleNodeHighlightState", "changeTranslation"]),
+    ...mapActions(["increaseScale", "decreaseScale", "toggleVertexHighlightState", "changeTranslation", "changeVertexPos", "vertexMouseDown"]),
     onMouseDownEvent(event) {
       this.iX = event.clientX
       this.iY = event.clientY
+    },
+    onMouseUpEvent() {
+      this.vertexMouseDown(false)
     },
     onMouseWheelEvent(event) {
       const delta = Math.sign(event.deltaY)
@@ -90,19 +95,36 @@ export default {
       }
     },
     onMouseMoveEvent(event) {
-      // perform viewport translation
+      // perform viewport translation or dragging of a vertex
       if (event.buttons > 0) {
-        let dx = -(this.iX - event.clientX)
-        let dy = -(this.iY - event.clientY)
-        this.iX = event.clientX
-        this.iY = event.clientY
-        this.changeTranslation({dx: dx, dy: dy})
+        if (this.$store.state.vertexBeingDragged != null) {
+          let dx = event.movementX
+          let dy = event.movementY
+          this.onVertexPositionChanged({
+            vertex: this.$store.state.vertexBeingDragged,
+            dx: dx,
+            dy: dy
+          })
+        } else {
+          let dx = -(this.iX - event.clientX)
+          let dy = -(this.iY - event.clientY)
+          this.iX = event.clientX
+          this.iY = event.clientY
+          this.changeTranslation({dx: dx, dy: dy})
+        }
       }
     },
-    onNodeClicked(node) {
-      // toggle node highlight state when clicked
-      this.toggleNodeHighlightState(node)
+    onVertexClicked(vertex) {
+      // toggle vertex highlight state when clicked
+      this.toggleVertexHighlightState(vertex)
+    },
+    onVertexPositionChanged(payload) {
+      this.changeVertexPos(payload)
+    },
+    onVertexMouseDown(down, vertex) {
+      this.vertexMouseDown({vertex, down})
     }
+
   }
 }
 </script>

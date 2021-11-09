@@ -12,6 +12,8 @@ export default createStore({
         // state attributes representing the graph
         edges: [],
         vertices: [],
+        // vertex that is being dragged
+        vertexBeingDragged: null,
         // define a global style object for graph components
         style: {
             edge: {
@@ -52,11 +54,11 @@ export default createStore({
             }
         },
         // mutations of node highlight state
-        HIGHLIGHT_NODE(state, node) {
-            node.highlighted = true
+        HIGHLIGHT_VERTEX(state, vertex) {
+            vertex.highlighted = true
         },
-        DISABLE_NODE_HIGHLIGHT(state, node) {
-            node.highlighted = false
+        DISABLE_VERTEX_HIGHLIGHT(state, vertex) {
+            vertex.highlighted = false
         },
         // mutations for changing the translation of the viewport
         CHANGE_TRANSLATION(state, {dx, dy}) {
@@ -64,9 +66,9 @@ export default createStore({
             state.viewPort.ty += dy
         },
         // TODO utilize
-        CHANGE_NODE_POS(state, {node, dx, dy}) {
-            node.x += dx
-            node.y += dy
+        CHANGE_VERTEX_POS(state, {vertex, dx, dy}) {
+            vertex.x += dx
+            vertex.y += dy
         },
         // mutation for storing the graph data
         SET_GRAPH_DATA(state, {edges, vertices}) {
@@ -76,6 +78,14 @@ export default createStore({
         // mutation for toggling the loading state
         SET_LOADING(state, loading) {
             state.loading = loading
+        },
+
+        VERTEX_MOUSE_DOWN(state, {vertex, down}) {
+            if (down) {
+                state.vertexBeingDragged = vertex
+            } else {
+                state.vertexBeingDragged = null
+            }
         }
     },
     actions: {
@@ -85,18 +95,22 @@ export default createStore({
         async decreaseScale({commit}) {
             commit("DECREASE_SCALE")
         },
-        async toggleNodeHighlightState({commit}, node) {
-            if (node.highlighted) {
-                commit("DISABLE_NODE_HIGHLIGHT", node)
+        async toggleVertexHighlightState({commit}, vertex) {
+            if (vertex.highlighted) {
+                commit("DISABLE_VERTEX_HIGHLIGHT", vertex)
             } else {
-                commit("HIGHLIGHT_NODE", node)
+                commit("HIGHLIGHT_VERTEX", vertex)
             }
         },
-        async changeTranslation({commit}, payload) {
-            commit("CHANGE_TRANSLATION", payload)
+        async changeTranslation({commit, state}, payload) {
+            if (!state.vertexBeingDragged) {
+                commit("CHANGE_TRANSLATION", payload)
+            }
         },
-        async changeNodePos({commit}, payload) {
-            commit("CHANGE_NODE_POS", payload)
+        async changeVertexPos({commit, state}, payload) {
+            payload.dx *= (1 / state.viewPort.scale)
+            payload.dy *= (1 / state.viewPort.scale)
+            commit("CHANGE_VERTEX_POS", payload)
         },
         // eslint-disable-next-line no-unused-vars
         async loadInitialData({commit}, graph) {
@@ -106,6 +120,9 @@ export default createStore({
             commit("SET_GRAPH_DATA", graph)
             await new Promise(resolve => setTimeout(resolve, 1500));
             commit("SET_LOADING", false)
+        },
+        async vertexMouseDown({commit}, payload) {
+            commit("VERTEX_MOUSE_DOWN", payload)
         }
     }
 })
