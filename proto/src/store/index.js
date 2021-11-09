@@ -65,7 +65,7 @@ export default createStore({
             state.viewPort.tx += dx
             state.viewPort.ty += dy
         },
-        // TODO utilize
+        // mutation for changing a position of a vertex
         CHANGE_VERTEX_POS(state, {vertex, dx, dy}) {
             vertex.x += dx
             vertex.y += dy
@@ -80,6 +80,7 @@ export default createStore({
             state.loading = loading
         },
 
+        // mutation to be when invoked a mouse button has been clicked down on a vertex
         VERTEX_MOUSE_DOWN(state, {vertex, down}) {
             if (down) {
                 state.vertexBeingDragged = vertex
