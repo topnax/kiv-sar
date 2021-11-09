@@ -10,10 +10,12 @@ yarn install
 yarn serve
 ```
 
-### Compiles and minifies for production
+### Compiles and minifies for production 
+- edit `vue.config.js` if going to test locally without starting up a server
 ```
 yarn build
 ```
+- produces `dist` folder containing static HTML and bundled JS
 
 ### Lints and fixes files
 ```
