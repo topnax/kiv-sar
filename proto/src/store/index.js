@@ -14,6 +14,8 @@ export default createStore({
         vertices: [],
         // vertex that is being dragged
         vertexBeingDragged: null,
+        // define the size of the world
+        worldSize: 5000,
         // define a global style object for graph components
         style: {
             edge: {
@@ -114,10 +116,10 @@ export default createStore({
             commit("CHANGE_VERTEX_POS", payload)
         },
         // eslint-disable-next-line no-unused-vars
-        async loadInitialData({commit}, graph) {
+        async loadInitialData({commit, state}, graph) {
             commit("SET_LOADING", true)
-            loadTestData.prepare_graph_object(graph, 5000)
-            force_directed_layout.force_directed_layout(graph, 5000, 5000, 20)
+            loadTestData.prepare_graph_object(graph, state.worldSize)
+            force_directed_layout.force_directed_layout(graph, state.worldSize, state.worldSize, 20)
             commit("SET_GRAPH_DATA", graph)
             await new Promise(resolve => setTimeout(resolve, 1500));
             commit("SET_LOADING", false)

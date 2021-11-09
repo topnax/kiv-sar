@@ -3,7 +3,7 @@
   <svg
       :width="viewPort.width != null ? viewPort.width : '100%'"
       :height="viewPort.height != null ? viewPort.height : '100%'"
-      viewBox="0 0 5000 5000">
+      :viewBox="`0 0 ${parentWorldSize} ${parentWorldSize}`">
     <!-- Use the referenced element -->
     <use :href="`#${refId}-root-element`"/>
     <rect
@@ -23,6 +23,7 @@ export default {
     refId: String,
     viewPort: Object,
     parentViewPort: Object,
+    parentWorldSize: Number
   }
 }
 </script>

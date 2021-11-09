@@ -13,6 +13,7 @@
         class="canvas-minimap"
         ref-id="main"
         :view-port="{height: 300}"
+        :parent-world-size="this.$store.state.worldSize"
         :parent-view-port="this.$store.state.viewPort"
     />
   </div>
